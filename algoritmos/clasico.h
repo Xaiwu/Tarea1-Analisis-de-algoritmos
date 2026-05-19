@@ -3,6 +3,6 @@
 
 #include "matrix_utils.h"
 
-Matriz multiplicacion_clasica(Matriz& A, Matriz& B, int n);
+Matriz multiplicacion_clasica(const Matriz& A, const Matriz& B);
 
 #endif

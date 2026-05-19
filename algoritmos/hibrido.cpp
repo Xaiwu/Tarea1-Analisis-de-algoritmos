@@ -1,17 +1,17 @@
-#include "strassen.h"
-#include "clasico.h"
+#include "hibrido.h"
 
-Matriz multiplicacion_strassen(const Matriz& A, const Matriz& B) {
+Matriz multiplicacion_hibrida(const Matriz& A, const Matriz& B, int umbral) {
    // Obtener el tamaño
    int n = A.size();
-   
+
    // Verificar que sean ambas iguales 
    if (B.size() != n) {std::cout << "Las matrices deben ser el mismo tamaño." << std::endl; std::exit(1);}
-   if (n == 1) {
-      Matriz C = crear_matriz(1);
-      C[0][0] = A[0][0] * B[0][0];
-      return C;
+   
+   // Mientras reciba recursivamente matrices menores al umbral, usar la multiplicación clásica
+   if (n < umbral) {
+      return multiplicacion_clasica(A, B);
    }
+   
    // Verificar que n sea potencia de 2
    if ((n & (n - 1)) != 0) {
       std::cout << "El tamaño de las matrices debe ser una potencia de 2." << std::endl;
@@ -46,13 +46,13 @@ Matriz multiplicacion_strassen(const Matriz& A, const Matriz& B) {
    }
 
    // Generar recursivamente los M1 a M7
-   Matriz M1 = multiplicacion_strassen(sumar(A11, A22), sumar(B11, B22));
-   Matriz M2 = multiplicacion_strassen(sumar(A21, A22), B11);
-   Matriz M3 = multiplicacion_strassen(A11, restar(B12, B22));
-   Matriz M4 = multiplicacion_strassen(A22, restar(B21, B11));
-   Matriz M5 = multiplicacion_strassen(sumar(A11, A12), B22);
-   Matriz M6 = multiplicacion_strassen(restar(A21, A11), sumar(B11, B12));
-   Matriz M7 = multiplicacion_strassen(restar(A12, A22), sumar(B21, B22));
+   Matriz M1 = multiplicacion_hibrida(sumar(A11, A22), sumar(B11, B22), umbral);
+   Matriz M2 = multiplicacion_hibrida(sumar(A21, A22), B11, umbral);
+   Matriz M3 = multiplicacion_hibrida(A11, restar(B12, B22), umbral);
+   Matriz M4 = multiplicacion_hibrida(A22, restar(B21, B11), umbral);
+   Matriz M5 = multiplicacion_hibrida(sumar(A11, A12), B22, umbral);
+   Matriz M6 = multiplicacion_hibrida(restar(A21, A11), sumar(B11, B12), umbral);
+   Matriz M7 = multiplicacion_hibrida(restar(A12, A22), sumar(B21, B22), umbral);
 
    // Calcular las submatrices del resultado C
    Matriz C11 = sumar(restar(sumar(M1, M4), M5), M7);
@@ -71,48 +71,4 @@ Matriz multiplicacion_strassen(const Matriz& A, const Matriz& B) {
       }
    }
    return C;
-}
-
-int main(){
-   Matriz A = crear_matriz(5);
-   Matriz B = crear_matriz(5);
-   fill_integers(A);
-   fill_integers(B);
-
-   std::cout << "Matriz A:" << std::endl;
-   for (const auto& row : A) {
-      for (const auto& val : row) {
-         std::cout << val << " ";
-      }
-      std::cout << std::endl;
-   }
-   std::cout << "Matriz B:" << std::endl;
-   for (const auto& row : B) {
-      for (const auto& val : row) {
-         std::cout << val << " ";
-      }
-      std::cout << std::endl;
-   }
-
-   Matriz C = multiplicacion_strassen(A, B);
-
-   std::cout << "Matriz C (resultado de Strassen):" << std::endl;
-   for (const auto& row : C) {
-      for (const auto& val : row) {
-         std::cout << val << " ";
-      }
-      std::cout << std::endl;
-   }
-
-   Matriz C2 = multiplicacion_clasica(A, B);
-
-   std::cout << "Matriz C2 (resultado de la multiplicación clásica):" << std::endl;
-   for (const auto& row : C2) {
-      for (const auto& val : row) {
-         std::cout << val << " ";
-      }
-      std::cout << std::endl;
-   }
-
-   return 0;
 }
