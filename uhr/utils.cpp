@@ -13,10 +13,12 @@
 #include <vector>
 
 inline void validate_input(int argc, char* argv[], std::int64_t& runs,
-                           std::int64_t& lower, std::int64_t& upper,
-                           std::int64_t& step) {
-    if (argc != 6) {
-        std::cerr << "Usage: <filename> <RUNS> <LOWER> <UPPER> <STEP>"
+                           std::int64_t& lower, std::int64_t& upper) {
+    // Cambiamos la validación para requerir exactamente 8 argumentos
+    if (argc != 8) {
+        std::cerr << "Usage: " << argv[0]
+                  << " <filename> <RUNS> <LOWER> <UPPER> <ALGORITMO> "
+                     "<EXPERIMENTO> <UMBRAL>"
                   << std::endl;
         std::cerr << "<filename> is the name of the file where performance "
                      "data will be written."
@@ -26,9 +28,15 @@ inline void validate_input(int argc, char* argv[], std::int64_t& runs,
                   << std::endl;
         std::cerr << "<RUNS>: numbers of runs per test case: should be >= 32."
                   << std::endl;
-        std::cerr << "<LOWER> <UPPER> <STEP>: range of test cases."
+        std::cerr << "<LOWER> <UPPER>: range of test cases. These "
+                     "should all be positive."
                   << std::endl;
-        std::cerr << "These should all be positive." << std::endl;
+        std::cerr << "<ALGORITMO>: CLASICO, STRASSEN o HIBRIDO." << std::endl;
+        std::cerr << "<EXPERIMENTO>: REALES, ENTEROS, IDENTIDAD o SPARSE."
+                  << std::endl;
+        std::cerr
+            << "<UMBRAL>: Valor de n0 para el caso base del hibrido (ej. 64)."
+            << std::endl;
         std::exit(EXIT_FAILURE);
     }
 
@@ -37,7 +45,6 @@ inline void validate_input(int argc, char* argv[], std::int64_t& runs,
         runs = std::stoll(argv[2]);
         lower = std::stoll(argv[3]);
         upper = std::stoll(argv[4]);
-        step = std::stoll(argv[5]);
     } catch (std::invalid_argument const& ex) {
         std::cerr << "std::invalid_argument::what(): " << ex.what()
                   << std::endl;
@@ -52,9 +59,8 @@ inline void validate_input(int argc, char* argv[], std::int64_t& runs,
         std::cerr << "<RUNS> must be at least 4." << std::endl;
         std::exit(EXIT_FAILURE);
     }
-    if (step <= 0 or lower <= 0 or upper <= 0) {
-        std::cerr << "<STEP>, <LOWER> and <UPPER> have to be positive."
-                  << std::endl;
+    if (lower <= 0 or upper <= 0) {
+        std::cerr << "<LOWER> and <UPPER> have to be positive." << std::endl;
         std::exit(EXIT_FAILURE);
     }
     if (lower > upper) {
