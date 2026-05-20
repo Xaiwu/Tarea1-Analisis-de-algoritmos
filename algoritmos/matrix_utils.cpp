@@ -62,7 +62,10 @@ void fill_sparse(Matriz& M, double probability) {
 // Suma y Resta
 Matriz sumar(const Matriz& A, const Matriz& B) {
     int n = A.size();
-    if (B.size() != n) {std::cout << "Las matrices deben ser el mismo tamaño." << std::endl; std::exit(1);}
+    if (B.size() != n) {
+        std::cout << "Las matrices deben ser el mismo tamaño." << std::endl;
+        std::exit(1);
+    }
     Matriz res(n, std::vector<double>(n));
     for (int i = 0; i < n; ++i) {
         for (int j = 0; j < n; ++j) {
@@ -74,7 +77,10 @@ Matriz sumar(const Matriz& A, const Matriz& B) {
 
 Matriz restar(const Matriz& A, const Matriz& B) {
     int n = A.size();
-    if (B.size() != n) {std::cout << "Las matrices deben ser el mismo tamaño." << std::endl; std::exit(1);}
+    if (B.size() != n) {
+        std::cout << "Las matrices deben ser el mismo tamaño." << std::endl;
+        std::exit(1);
+    }
     Matriz res(n, std::vector<double>(n));
     for (int i = 0; i < n; ++i) {
         for (int j = 0; j < n; ++j) {
@@ -82,4 +88,23 @@ Matriz restar(const Matriz& A, const Matriz& B) {
         }
     }
     return res;
+}
+
+void preparar_experimento(const std::string& tipo, Matriz& A, Matriz& B) {
+    if (tipo == "REALES") {
+        fill_random(A);
+        fill_random(B);
+    } else if (tipo == "ENTEROS") {
+        fill_integers(A, 0, 100);
+        fill_integers(B, 0, 100);
+    } else if (tipo == "IDENTIDAD") {
+        fill_random(A);
+        fill_identity(B);
+    } else if (tipo == "SPARSE") {
+        fill_sparse(A, 0.05);
+        fill_sparse(B, 0.05);
+    } else {
+        fill_random(A);
+        fill_random(B);
+    }
 }

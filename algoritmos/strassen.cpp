@@ -1,118 +1,79 @@
 #include "strassen.h"
+
 #include "clasico.h"
 
 Matriz multiplicacion_strassen(const Matriz& A, const Matriz& B) {
-   // Obtener el tamaño
-   int n = A.size();
-   
-   // Verificar que sean ambas iguales 
-   if (B.size() != n) {std::cout << "Las matrices deben ser el mismo tamaño." << std::endl; std::exit(1);}
-   if (n == 1) {
-      Matriz C = crear_matriz(1);
-      C[0][0] = A[0][0] * B[0][0];
-      return C;
-   }
-   // Verificar que n sea potencia de 2
-   if ((n & (n - 1)) != 0) {
-      std::cout << "El tamaño de las matrices debe ser una potencia de 2." << std::endl;
-      std::exit(1);
-   }
+    // Obtener el tamaño
+    int n = A.size();
 
-   // Dividir en 4 cada matriz
-   int m = n / 2;
-   Matriz A11(m, std::vector<double>(m));
-   Matriz A12(m, std::vector<double>(m));
-   Matriz A21(m, std::vector<double>(m));
-   Matriz A22(m, std::vector<double>(m));
+    // Verificar que sean ambas iguales
+    if (B.size() != n) {
+        std::cout << "Las matrices deben ser el mismo tamaño." << std::endl;
+        std::exit(1);
+    }
+    if (n == 1) {
+        Matriz C = crear_matriz(1);
+        C[0][0] = A[0][0] * B[0][0];
+        return C;
+    }
+    // Verificar que n sea potencia de 2
+    if ((n & (n - 1)) != 0) {
+        std::cout << "El tamaño de las matrices debe ser una potencia de 2."
+                  << std::endl;
+        std::exit(1);
+    }
 
-   Matriz B11(m, std::vector<double>(m));
-   Matriz B12(m, std::vector<double>(m));
-   Matriz B21(m, std::vector<double>(m));
-   Matriz B22(m, std::vector<double>(m));
+    // Dividir en 4 cada matriz
+    int m = n / 2;
+    Matriz A11(m, std::vector<double>(m));
+    Matriz A12(m, std::vector<double>(m));
+    Matriz A21(m, std::vector<double>(m));
+    Matriz A22(m, std::vector<double>(m));
 
-   // Llenar las submatrices
-   for (int i = 0; i < m; i++) {
-      for (int j = 0; j < m; j++) {
-         A11[i][j] = A[i][j];
-         A12[i][j] = A[i][j + m];
-         A21[i][j] = A[i + m][j];
-         A22[i][j] = A[i + m][j + m];
+    Matriz B11(m, std::vector<double>(m));
+    Matriz B12(m, std::vector<double>(m));
+    Matriz B21(m, std::vector<double>(m));
+    Matriz B22(m, std::vector<double>(m));
 
-         B11[i][j] = B[i][j];
-         B12[i][j] = B[i][j + m];
-         B21[i][j] = B[i + m][j];
-         B22[i][j] = B[i + m][j + m];
-      }
-   }
+    // Llenar las submatrices
+    for (int i = 0; i < m; i++) {
+        for (int j = 0; j < m; j++) {
+            A11[i][j] = A[i][j];
+            A12[i][j] = A[i][j + m];
+            A21[i][j] = A[i + m][j];
+            A22[i][j] = A[i + m][j + m];
 
-   // Generar recursivamente los M1 a M7
-   Matriz M1 = multiplicacion_strassen(sumar(A11, A22), sumar(B11, B22));
-   Matriz M2 = multiplicacion_strassen(sumar(A21, A22), B11);
-   Matriz M3 = multiplicacion_strassen(A11, restar(B12, B22));
-   Matriz M4 = multiplicacion_strassen(A22, restar(B21, B11));
-   Matriz M5 = multiplicacion_strassen(sumar(A11, A12), B22);
-   Matriz M6 = multiplicacion_strassen(restar(A21, A11), sumar(B11, B12));
-   Matriz M7 = multiplicacion_strassen(restar(A12, A22), sumar(B21, B22));
+            B11[i][j] = B[i][j];
+            B12[i][j] = B[i][j + m];
+            B21[i][j] = B[i + m][j];
+            B22[i][j] = B[i + m][j + m];
+        }
+    }
 
-   // Calcular las submatrices del resultado C
-   Matriz C11 = sumar(restar(sumar(M1, M4), M5), M7);
-   Matriz C12 = sumar(M3, M5);
-   Matriz C21 = sumar(M2, M4);
-   Matriz C22 = sumar(sumar(restar(M1, M2), M3), M6);
+    // Generar recursivamente los M1 a M7
+    Matriz M1 = multiplicacion_strassen(sumar(A11, A22), sumar(B11, B22));
+    Matriz M2 = multiplicacion_strassen(sumar(A21, A22), B11);
+    Matriz M3 = multiplicacion_strassen(A11, restar(B12, B22));
+    Matriz M4 = multiplicacion_strassen(A22, restar(B21, B11));
+    Matriz M5 = multiplicacion_strassen(sumar(A11, A12), B22);
+    Matriz M6 = multiplicacion_strassen(restar(A21, A11), sumar(B11, B12));
+    Matriz M7 = multiplicacion_strassen(restar(A12, A22), sumar(B21, B22));
 
-   // Combinar las submatrices en la matriz resultado C
-   Matriz C = crear_matriz(n);
-   for (int i = 0; i < m; i++) {
-      for (int j = 0; j < m; j++) {
-         C[i][j] = C11[i][j];
-         C[i][j + m] = C12[i][j];
-         C[i + m][j] = C21[i][j];
-         C[i + m][j + m] = C22[i][j];
-      }
-   }
-   return C;
-}
+    // Calcular las submatrices del resultado C
+    Matriz C11 = sumar(restar(sumar(M1, M4), M5), M7);
+    Matriz C12 = sumar(M3, M5);
+    Matriz C21 = sumar(M2, M4);
+    Matriz C22 = sumar(sumar(restar(M1, M2), M3), M6);
 
-int main(){
-   Matriz A = crear_matriz(5);
-   Matriz B = crear_matriz(5);
-   fill_integers(A);
-   fill_integers(B);
-
-   std::cout << "Matriz A:" << std::endl;
-   for (const auto& row : A) {
-      for (const auto& val : row) {
-         std::cout << val << " ";
-      }
-      std::cout << std::endl;
-   }
-   std::cout << "Matriz B:" << std::endl;
-   for (const auto& row : B) {
-      for (const auto& val : row) {
-         std::cout << val << " ";
-      }
-      std::cout << std::endl;
-   }
-
-   Matriz C = multiplicacion_strassen(A, B);
-
-   std::cout << "Matriz C (resultado de Strassen):" << std::endl;
-   for (const auto& row : C) {
-      for (const auto& val : row) {
-         std::cout << val << " ";
-      }
-      std::cout << std::endl;
-   }
-
-   Matriz C2 = multiplicacion_clasica(A, B);
-
-   std::cout << "Matriz C2 (resultado de la multiplicación clásica):" << std::endl;
-   for (const auto& row : C2) {
-      for (const auto& val : row) {
-         std::cout << val << " ";
-      }
-      std::cout << std::endl;
-   }
-
-   return 0;
+    // Combinar las submatrices en la matriz resultado C
+    Matriz C = crear_matriz(n);
+    for (int i = 0; i < m; i++) {
+        for (int j = 0; j < m; j++) {
+            C[i][j] = C11[i][j];
+            C[i][j + m] = C12[i][j];
+            C[i + m][j] = C21[i][j];
+            C[i + m][j + m] = C22[i][j];
+        }
+    }
+    return C;
 }
