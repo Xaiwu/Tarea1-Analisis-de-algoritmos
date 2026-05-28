@@ -1,5 +1,10 @@
 # Implementación y análisis de algoritmos de multiplicación de matrices
 
+## Grupo
+- Jesús Guevara Salcedo
+- Joseph Matamala Sepúlveda
+- Marcelo Vergara Fierro
+
 ## Dependencias
 - Compilador C++ con soporte C++11 o superior (`g++`, `clang++` o `MSVC`).
 - Biblioteca Eigen para comparación. Para poder compilar y ejecutar `main_correctitud.cpp` con los comandos proporcionados, descargue Eigen desde https://libeigen.gitlab.io y coloque la carpeta `eigen` en la raíz del proyecto. Alternativamente, puede instalar Eigen globalmente en su sistema y ajustar los flags de compilación para apuntar a la ubicación de los headers.
