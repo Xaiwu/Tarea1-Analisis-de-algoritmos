@@ -24,3 +24,4 @@ g++ main_correctitud.cpp algoritmos/clasico.cpp algoritmos/hibrido.cpp algoritmo
 ```
 ## Experimentación
 - Los scripts `experimentos.sh` y `experimento_strassen.sh` automatizan ejecuciones para medir tiempos; deben ser ejecutados en un entorno que soporte bash, ya sea linux o WSL.
+- En caso de no poder utilizar linux o WSL se pueden utilizar `experimentos.bat` y `experimento_strassen.bat` para Windows.
